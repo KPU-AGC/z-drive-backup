@@ -36,6 +36,10 @@ def get_args(_configs) -> Namespace:
         metavar="NAME",
         required=True,
         help=f"(DESTINATION) target instrument folder on the Z-drive, CHOOSE: {sorted(_configs['instruments'].keys())}")
+    parser.add_argument(
+        '--check',
+        action='store_true',
+        help=f"do not copy files, just identify files that do not already exist on the Z-drive.")
 
     args = parser.parse_args()
 
@@ -209,10 +213,11 @@ def main() -> None:
         quit()
 
     # copy files from the input to the destination
-    try: _copy_to_drive(args.input_path, args.destination_path, directory_changes)
-    except:
-        logging.critical("Critical error when trying to performing backup!")
-        quit()
+    if not args.check:
+        try: _copy_to_drive(args.input_path, args.destination_path, directory_changes)
+        except:
+            logging.critical("Critical error when trying to performing backup!")
+            quit()
 
     return None
 # --------------------------------------------------
