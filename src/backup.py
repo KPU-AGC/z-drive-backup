@@ -110,8 +110,12 @@ def _identify_changes(_input_path: Path, _destination_path: Path) -> dict:
     new_files: list = []
     updated_files: list = []
 
+    # running count of files that've been checked
+    checked_files_num: int = 0
+
     # recursive list of files in the input, relative to input
     for file in _input_path.glob('**/*'):
+        checked_files_num += 1
         adjusted_path = file.resolve().relative_to(_input_path.resolve())
         if not _destination_path.joinpath(adjusted_path).exists(): new_files.append(adjusted_path)
         elif all([
@@ -119,6 +123,8 @@ def _identify_changes(_input_path: Path, _destination_path: Path) -> dict:
             _input_path.joinpath(adjusted_path).is_file(),
             _input_path.joinpath(adjusted_path).stat().st_mtime != _input_path.joinpath(adjusted_path).stat().st_mtime]):
             updated_files.append(adjusted_path)
+
+    logging.info(f"Checked {checked_files_num} files.")
 
     # counts
     updated_files_num: int = len(updated_files)
