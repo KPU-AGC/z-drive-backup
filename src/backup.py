@@ -142,6 +142,7 @@ def _log_params(args: Namespace) -> None:
     logging.info(f"Input path: {args.input_path}")
     logging.info(f"Instrument: {args.instrument}")
     logging.info(f"Destination path: {args.destination_path}\n")
+    if args.check: logging.warning(f'Running --check; files will not be copied!\n')
     return None
 def _parse_config() -> dict:
     """

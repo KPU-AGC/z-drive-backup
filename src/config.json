@@ -6,7 +6,7 @@
     },
     "instruments": {
         "NGS": "#z-drive-mockup/raw-data/NGS",
-        "SeqStudio": "#z-drive-mockup/raw-data/SeqStudio"
+        "SeqStudio": "/mnt/z/Raw-data/SeqStudio"
     },
-    "log_output": "#z-drive-mockup/raw-data/"
+    "log_output": "."
 }
