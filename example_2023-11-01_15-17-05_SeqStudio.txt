@@ -1,0 +1,77 @@
+**********************
+Windows PowerShell transcript start
+Start time: 20231101151705
+Username: DESKTOP-9QEDS3T\erick
+RunAs User: DESKTOP-9QEDS3T\erick
+Configuration Name: 
+Machine: DESKTOP-9QEDS3T (Microsoft Windows NT 10.0.22621.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command & C:\Users\erick\Documents\GitHub\z-drive-backup\z-drive-backup.ps1 -MyArguments
+Process ID: 26656
+PSVersion: 5.1.22621.2506
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.2506
+BuildVersion: 10.0.22621.2506
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\File-Transfer-Log\2023-11-01_15-17-05_SeqStudio.txt
+[2023-11-01 15:17:09] Beginning backup of SeqStudio to SeqStudio !
+[2023-11-01 15:17:09] Backing up directory: C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803 ...
+[2023-11-01 15:17:09] Backed up directory: C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803 .
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A1_20230803_152618.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A1_20230803_152618.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A1_20230803_152618.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A1_20230803_152618.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B1_20230803_152619.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B1_20230803_152619.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B1_20230803_152619.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B1_20230803_152619.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_C1_20230803_152620.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_C1_20230803_152620.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_C1_20230803_152620.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_C1_20230803_152620.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_D1_20230803_152621.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_D1_20230803_152621.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_D1_20230803_152621.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_D1_20230803_152621.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_E1_20230803_160854.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_E1_20230803_160854.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_E1_20230803_160854.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_E1_20230803_160854.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample1_20230803_160855.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample1_20230803_160855.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample1_20230803_160855.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample1_20230803_160855.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_G1_20230803_160856.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_G1_20230803_160856.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_G1_20230803_160856.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_G1_20230803_160856.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_H1_20230803_160857.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_H1_20230803_160857.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_H1_20230803_160857.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_H1_20230803_160857.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A2_20230803_165129.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A2_20230803_165129.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A2_20230803_165129.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A2_20230803_165129.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B2_20230803_165130.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B2_20230803_165130.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B2_20230803_165130.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B2_20230803_165130.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_C2_20230803_165131.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_C2_20230803_165131.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_C2_20230803_165131.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_C2_20230803_165131.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_D2_20230803_165132.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_D2_20230803_165132.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_D2_20230803_165132.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_D2_20230803_165132.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_E2_20230803_173403.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_E2_20230803_173403.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_E2_20230803_173403.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_E2_20230803_173403.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample2_20230803_173404.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample2_20230803_173404.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample2_20230803_173404.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample2_20230803_173404.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_G2_20230803_173405.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_G2_20230803_173405.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_G2_20230803_173405.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_G2_20230803_173405.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_H2_20230803_173406.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_H2_20230803_173406.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_H2_20230803_173406.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_H2_20230803_173406.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\pGEM_C3_20230803_181642.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\pGEM_C3_20230803_181642.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\pGEM_C3_20230803_181642.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\pGEM_C3_20230803_181642.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\pGEM_D3_20230803_181643.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\pGEM_D3_20230803_181643.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\pGEM_D3_20230803_181643.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\pGEM_D3_20230803_181643.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.csv to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.csv ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.csv to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.csv
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.pdf to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.pdf ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.pdf to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\Plate_20230803_QCReport_20230803_152618.pdf
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A3_20230803_181640.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A3_20230803_181640.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_A3_20230803_181640.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_A3_20230803_181640.ab1
+[2023-11-01 15:17:09] Backing up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B3_20230803_181641.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B3_20230803_181641.ab1 ...
+[2023-11-01 15:17:09] Backed up: C:\Users\erick\Documents\z-drive-test\MACHINE\SeqStudio\Plate_20230803\sample_B3_20230803_181641.ab1 to C:\Users\erick\Documents\z-drive-test\Z\Raw-Data\SeqStudio\Plate_20230803\sample_B3_20230803_181641.ab1
+[2023-11-01 15:17:09] Finished backup of SeqStudio to SeqStudio !
+
+Total dirs missing: 1
+Total files missing: 22
+
+Total dirs backed up: 1/1
+Total files backed up: 22/22
+**********************
+Windows PowerShell transcript end
+End time: 20231101151709
+**********************
