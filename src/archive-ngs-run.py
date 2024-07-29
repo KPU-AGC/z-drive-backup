@@ -123,6 +123,64 @@ def _do_multiqc(input_dir: pathlib.Path, dry_run_arg: bool = True, show_multiqc_
     command = f'cp {source_html_path} {dest_html_path}'
     if not dry_run_arg: subprocess.run(command, shell=True)
     return None
+# Expected input directory: 
+def _analyze_phix(input_dir: pathlib.Path, destination_dir: pathlib.Path, threads):
+    undetermined_buckets = [str(file) for file in input_dir.glob('Undetermined*')]
+    # Expecting 2 undetermined files
+    if len(undetermined_buckets) != 2:
+        return ValueError
+
+    for file in undetermined_buckets:
+        read_orientation = file.split('_')[3]
+        if '1' in read_orientation:
+            ud_1 = file
+        elif '2' in read_orientation:
+            ud_2 = file
+        else:
+            print('Orientation not found or im stupid')
+    
+    dest_file = destination_dir / 'aln.sam'
+    
+    command = f'bowtie2 -x /home/agc/Documents/ref/genomes/phiX/phix174 -1 {ud_1} -2 {ud_2} -S {str(dest_file)}'
+    try: 
+        subprocess.run(command, shell=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as exc:
+        print(f'Alignment failed.', exc.returncode, exc.output)
+        return SyntaxError
+    # looks for alignment file
+    samfile = destination_dir.glob('*sam')
+    if not samfile:
+        print(f'Samfile not found')
+        return ValueError
+
+    # separate forward and reverse files
+    command = f'samtools fastq -1 phix_freads -2 phix_rreads {str(samfile)}'
+    try:
+        subprocess.run(command, shell=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as exc:
+        print(f'Separation of reads failed.', exc.returncode, exc.output)
+        return SyntaxError
+    
+    fw_fastq = destination_dir.glob('*freads*')
+    rv_fastq = destination_dir.glob('*rreads*')
+
+    if not fw_fastq or not rv_fastq:
+        print('Fastq not found')
+        return LookupError
+
+    command = f'fastqc -t {threads} -o {destination_dir} {fw_fastq} {rv_fastq} {ud_1} {ud_2}'
+    try:
+        subprocess.run(command, shell=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as exc:
+        print(f'Fastqc failed.', exc.returncode, exc.output)
+        return SyntaxError
+    
+    command = f'multiqc {destination_dir}'
+    try:
+        subprocess.run(command, shell=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as exc:
+        print(f'Multiqc failed.', exc.returncode, exc.output)
+        return SyntaxError
 def _check_outputs(input_dir: pathlib.Path, dry_run: bool, show_fastqc_arg: bool, show_multiqc_arg: bool, threads: int) -> bool:
     """
     Checks the input directory.
@@ -147,6 +205,13 @@ def _check_outputs(input_dir: pathlib.Path, dry_run: bool, show_fastqc_arg: bool
         _do_multiqc(input_dir.joinpath('analysis/fastqc'), dry_run, show_multiqc_arg)
         print_log('INFO', f"Performed multiqc analysis!")
     else: print_log('WARN', f"Multiqc analysis already exists!")
+
+    print_log('INFO', f"Checking phix analysis ...")
+    if not input_dir.joinpath('analysis/phiX').exists():
+        if not dry_run: input_dir.joinpath('analysis/phiX').mkdir(exist_ok=True)
+        _analyze_phix(fastq_dir, input_dir.joinpath('analysis/phix'), threads)
+        print_log('INFO', f"Performed phiX analysis!")
+    else: print_log('WARN', f"PhiX analysis already exists!")
     return None
 def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry_run: bool) -> bool:
     """
@@ -160,6 +225,7 @@ def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry
     return None
 def print_log(level: str, message: str) -> None:
     """
+
     """
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {level.upper()}: {message}")
