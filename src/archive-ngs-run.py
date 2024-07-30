@@ -446,57 +446,57 @@ def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bo
         logging.critical(f'md5 hashes invalid! Something went wrong!')
         return False
 def _analyze_phix(input_dir: pathlib.Path, destination_dir: pathlib.Path, threads):
-    undetermined_buckets = [str(file) for file in input_dir.glob('Undetermined*')]
+    undetermined_buckets = [file for file in input_dir.glob('Undetermined*')]
     # Expecting 2 undetermined files
     if len(undetermined_buckets) != 2:
         return ValueError
 
     for file in undetermined_buckets:
-        read_orientation = file.split('_')[3]
+        read_orientation = file.stem.split('_')[3]
         if '1' in read_orientation:
             ud_1 = file
         elif '2' in read_orientation:
             ud_2 = file
         else:
             print('Orientation not found or im stupid')
-    
+
     dest_file = destination_dir / 'aln.sam'
-    
-    command = f'bowtie2 -x /home/agc/Documents/ref/genomes/phiX/phix174 -1 {ud_1} -2 {ud_2} -S {str(dest_file)}'
-    try: 
+
+    command = f'bowtie2 -x /home/agc/Documents/ref/genomes/phiX/phix174 -1 {ud_1} -2 {ud_2} -S {dest_file}'
+    try:
         subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         print(f'Alignment failed.', exc.returncode, exc.output)
         return SyntaxError
     # looks for alignment file
-    samfile = destination_dir.glob('*sam')
+    samfile = [x for x in destination_dir.glob('*sam')]
     if not samfile:
         print(f'Samfile not found')
         return ValueError
 
     # separate forward and reverse files
-    command = f'samtools fastq -1 phix_freads -2 phix_rreads {str(samfile)}'
+    command = f'samtools fastq -1 {destination_dir.joinpath("phix_freads")} -2 {destination_dir.joinpath("phix_rreads")} {samfile[0]}'
     try:
         subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         print(f'Separation of reads failed.', exc.returncode, exc.output)
         return SyntaxError
-    
-    fw_fastq = destination_dir.glob('*freads*')
-    rv_fastq = destination_dir.glob('*rreads*')
+
+    fw_fastq = list(destination_dir.glob('*freads*'))
+    rv_fastq = list(destination_dir.glob('*rreads*'))
 
     if not fw_fastq or not rv_fastq:
         print('Fastq not found')
         return LookupError
 
-    command = f'fastqc -t {threads} -o {destination_dir} {fw_fastq} {rv_fastq} {ud_1} {ud_2}'
+    command = f'fastqc -t {threads} -o {destination_dir} {fw_fastq[0]} {rv_fastq[0]} {ud_1} {ud_2}'
     try:
         subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         print(f'Fastqc failed.', exc.returncode, exc.output)
         return SyntaxError
-    
-    command = f'multiqc {destination_dir}'
+
+    command = f'multiqc --outdir {destination_dir/"multiqc"}  {destination_dir}'
     try:
         subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
