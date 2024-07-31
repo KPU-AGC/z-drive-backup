@@ -271,18 +271,15 @@ def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry
         logging.info(f'Copied {input_dir} to {destination_dir}!')
     else: logging.warning(f'Destination {destination_dir.joinpath(input_dir.name)} already exists!')
     return None
-def _check_dependencies(software_list: list) -> bool:
+def _check_dependencies(software_list: list) -> None:
     """
     """
-    installed_status = {}
-
     for tool in software_list:
             try:
                 subprocess.run([tool, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             except (subprocess.CalledProcessError, FileNotFoundError):
                 raise RuntimeError(f"{tool} is not installed.")
-
-    return installed_status
+    return None
 # --------------------------------------------------
 def main() -> None:
     """
