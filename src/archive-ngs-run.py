@@ -152,7 +152,7 @@ def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bo
     with open(local_archive_dir.parent.joinpath('checksum.md5')) as local_checksum_file: local_checksum =  local_checksum_file.read()
 
     logging.info(f'Comparing md5 hashes of {z_drive_dir} and {local_archive_dir} .')
-    if z_drive_checksum == local_checksum: 
+    if z_drive_checksum == local_checksum:
         logging.info(f'md5 hashes validated .')
         return True
     else:
@@ -161,7 +161,7 @@ def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bo
 def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, show_fastqc_arg: bool, threads: int):
     """
     """
-    
+
     logging.info(f'Finding Undetermined reads in {input_fastq_dir} ...')
     undetermined_reads: list[pathlib.Path] = list(input_fastq_dir.glob('Undetermined*'))
     if len(undetermined_reads) != 2:
@@ -207,16 +207,23 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
         return LookupError
 
     command = f'fastqc -t {threads} -o {destination_dir} {fw_fastq} {rv_fastq} {undetermined_read_1} {undetermined_read_2}'
-    try: subprocess.run(command, shell=True, stdout=None if not show_fastqc_arg else subprocess.PIPE, stderr=None if not show_fastqc_arg else subprocess.PIPE)
+    try: subprocess.run(command, shell=True,
+        stdout=subprocess.PIPE if show_fastqc_arg else subprocess.DEVNULL,
+        stderr=subprocess.PIPE if show_fastqc_arg else subprocess.DEVNULL)
     except subprocess.CalledProcessError as exc:
         logging.critical(f"FastQC of reads failed.\n{exc.returncode}\n{exc.output}")
         return SyntaxError
-
-    command = f'multiqc {destination_dir}'
+    run_name: str = destination_dir.parent.parent.stem
+    command = f"multiqc {destination_dir} --interactive --outdir {destination_dir} --filename phiX_multiqc.html"
     try: subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         logging.critical(f"MultiQC failed.\n{exc.returncode}\n{exc.output}")
         return SyntaxError
+    
+    source_html_path = destination_dir.joinpath('phiX_multiqc.html')
+    dest_html_path = destination_dir.parent.parent.joinpath(f'{run_name}.phiX.html')
+    command = f'cp {source_html_path} {dest_html_path}'
+    subprocess.run(command, shell=True)
 def _check_outputs(input_dir: pathlib.Path, dry_run: bool, do_phix_arg: bool, show_fastqc_arg: bool, show_multiqc_arg: bool, threads: int) -> bool:
     """
     Checks the input directory.
@@ -278,7 +285,7 @@ def _check_dependencies(software_list: list) -> None:
             try:
                 subprocess.run([tool, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
             except (subprocess.CalledProcessError, FileNotFoundError):
-                raise RuntimeError(f"{tool} is not installed.")
+                raise RuntimeError(f"{tool} is not installed. Are you in the fastqc environment?")
     return None
 # --------------------------------------------------
 def main() -> None:
@@ -302,10 +309,10 @@ def main() -> None:
     # consider adding phiX analysis here as a separate "module" ? -Erick
     _perform_archive(args.z_drive_ngs_dir, args.archive_dir, args.dry_run_arg)
 
-    if not _check_md5(args.z_drive_ngs_dir, args.archive_dir.joinpath(args.z_drive_ngs_dir.stem)): 
+    if not _check_md5(args.z_drive_ngs_dir, args.archive_dir.joinpath(args.z_drive_ngs_dir.stem)):
         logging.critical("CATASTROPHIC FAILURE SOMEWHERE !")
         return None
-    
+
     logging.info("BACKUP COMPLETE !")
     return None
 # --------------------------------------------------
