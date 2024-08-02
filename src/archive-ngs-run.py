@@ -4,7 +4,7 @@ __description__ =\
 Purpose: To streamline the process of archiving NGS runs from the Z-drive.
 """
 __author__ = "Erick Samera, Kevin Saulog"
-__version__ = "0.8.0"
+__version__ = "1.0.0"
 __comments__ = "added dependencies check (duh), also fixed md5 behaviour"
 # --------------------------------------------------
 from argparse import (
@@ -68,6 +68,12 @@ def get_args() -> Namespace:
         action='store_true',
         help='show progress from multiqc analysis [Default: False]')
     parser.add_argument(
+        '-v',
+        '--verbose',
+        dest='verbose_arg',
+        action='store_true',
+        help='show debug and detailed logging [Default: True]')
+    parser.add_argument(
         '-t',
         '--threads',
         dest='threads',
@@ -88,6 +94,14 @@ def get_args() -> Namespace:
 # --------------------------------------------------
 def _find_fastq_files(input_dir: pathlib.Path, dry_run_arg: bool = True) -> pathlib.Path:
     """
+    Finds the directory containing FASTQ files within a specified MiSeqOutput directory.
+
+    Parameters:
+        input_dir (pathlib.Path): The directory to search for FASTQ files, the MiSeqOutput directory.
+        dry_run_arg (bool): optional (default=True), if True, performs a dry run without executing any operations.
+
+    Returns:
+        (pathlib.Path): The path to the directory containing the FASTQ files.
     """
     command = f'find {input_dir.resolve()} -name "*.fastq.gz"'
     result = subprocess.run(command, capture_output=True, shell=True)
@@ -97,6 +111,14 @@ def _find_fastq_files(input_dir: pathlib.Path, dry_run_arg: bool = True) -> path
     quit()
 def _find_miseq_output(input_dir: pathlib.Path, dry_run_arg: bool = True) -> pathlib.Path:
     """
+    Finds specifically the MiSeqOutput directory.
+
+    Parameters:
+        input_dir (pathlib.Path): The root run directory to search for the MiSeqOutput directory.
+        dry_run_arg (bool): optional (default=True), if True, performs a dry run without executing any operations.
+
+    Returns:
+        (pathlib.Path): The path to the MiSeqOutput directory.
     """
     logging.debug(f'Trying to find MiSeqOutput directory in {input_dir} ...')
     dirs = [i for i in input_dir.glob('*') if (i.is_dir() and i.name not in ('analysis', 'docs'))]
@@ -111,6 +133,17 @@ def _find_miseq_output(input_dir: pathlib.Path, dry_run_arg: bool = True) -> pat
     quit()
 def _do_fastqc(input_dir: pathlib.Path, fastqc_out_dir: pathlib.Path, dry_run_arg: bool = True, show_fastqc_arg: bool = True, threads: int = 32) -> None:
     """
+    Performs fastqc analysis on a given directory containing .fastq.gz files with a given number of threads. and outputs the analysis.
+
+    Parameters:
+        input_dir (pathlib.Path): the directory containing .fastq.gz files.
+        fastqc_out_dir (pathlib.Path): the directory to output the fastqc analysis.
+        dry_run_arg (bool): optional (default=True), if True, performs a dry run without executing any operations.
+        show_fastqc_arg (bool): show the analysis progress if True, else keep this hidden.
+        threads (int): number of threads to run for fastqc.
+
+    Returns:
+        (None)
     """
     fastq_files = [str(file) for file in input_dir.glob('*.fastq*')]
     logging.debug(f'Found {len(fastq_files)} files to process in {input_dir}.')
@@ -120,6 +153,15 @@ def _do_fastqc(input_dir: pathlib.Path, fastqc_out_dir: pathlib.Path, dry_run_ar
     return None
 def _do_multiqc(input_dir: pathlib.Path, dry_run_arg: bool = True, show_multiqc_arg = False) -> None:
     """
+    Performs multiqc analysis on a given directory containing fastqc analysis.
+
+    Parameters:
+        input_dir (pathlib.Path): the directory containing fastqc analysis files.
+        dry_run_arg (bool): optional (default=True), if True, performs a dry run without executing any operations.
+        show_multiqc_arg (bool): show the analysis progress if True, else keep this hidden.
+
+    Returns:
+        (None)
     """
     logging.info(f'Running multiqc on fastqc analysis dir: {input_dir} ...')
     command = f'multiqc {input_dir} --interactive --outdir {input_dir.parent} --filename multiqc.html'
@@ -132,6 +174,13 @@ def _do_multiqc(input_dir: pathlib.Path, dry_run_arg: bool = True, show_multiqc_
     return None
 def _generate_md5(input_dir: pathlib.Path) -> None:
     """
+    Generate an md5 checksum for a given directory.
+
+    Parameters:
+        input_dir (pathlib.Path): target directory.
+
+    Returns:
+        (None)
     """
     logging.info(f'Generating md5 hash of {input_dir} ...')
     commmand = f"(cd {input_dir} && find . -type f -print0 | xargs -0 md5sum | sort -k2) > {input_dir.parent.joinpath('checksum.md5')}"
@@ -140,6 +189,14 @@ def _generate_md5(input_dir: pathlib.Path) -> None:
     return None
 def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bool:
     """
+    Compare the md5 checksum between the Z-drive copy and the local archive copy and return True if they're the same.
+
+    Parameters:
+        z_drive_dir (pathlib.Path): the Z-drive copy of the MiSeqOutput directory.
+        local_archive_dir (pathlib.Path): the Z-drive copy of the MiSeqOutput directory.
+
+    Returns:
+        (bool): True if they match, False otherwise
     """
     z_drive_dir = _find_miseq_output(z_drive_dir)
     local_archive_dir = _find_miseq_output(local_archive_dir)
@@ -158,10 +215,22 @@ def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bo
     else:
         logging.critical(f'md5 hashes invalid! Something went wrong!')
         return False
-def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, show_fastqc_arg: bool, threads: int):
+def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, show_fastqc_arg: bool, show_multiqc_arg: bool, threads: int):
     """
-    """
+    Find the Undetermined reads, do the PhiX analysis, and output the analysis.
 
+    Parameters:
+        input_fastq_dir (pathlib.Path): the directory containing .fastq.gz files in the MiSeqOutput directory.
+        destination_dir (pathlib.Path): the directory to output analysis files.
+        show_fastq_arg (bool): show the fastqc analysis progress if True, else keep this hidden.
+        show_multiqc_arg (bool): show the fastqc analysis progress if True, else keep this hidden.
+        threads (int): number of threads to run for fastqc.
+
+    Returns:
+        (many)
+
+    TODO: consider using the pre-built functions for fastqc and multiqc.
+    """
     logging.info(f'Finding Undetermined reads in {input_fastq_dir} ...')
     undetermined_reads: list[pathlib.Path] = list(input_fastq_dir.glob('Undetermined*'))
     if len(undetermined_reads) != 2:
@@ -215,7 +284,9 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
         return SyntaxError
     run_name: str = destination_dir.parent.parent.stem
     command = f"multiqc {destination_dir} --interactive --outdir {destination_dir} --filename phiX_multiqc.html"
-    try: subprocess.run(command, shell=True, stderr=subprocess.PIPE)
+    try: subprocess.run(command, shell=True,
+        stdout=subprocess.PIPE if show_multiqc_arg else subprocess.DEVNULL,
+        stderr=subprocess.PIPE if show_multiqc_arg else subprocess.DEVNULL)
     except subprocess.CalledProcessError as exc:
         logging.critical(f"MultiQC failed.\n{exc.returncode}\n{exc.output}")
         return SyntaxError
@@ -224,11 +295,23 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
     dest_html_path = destination_dir.parent.parent.joinpath(f'{run_name}.phiX.html')
     command = f'cp {source_html_path} {dest_html_path}'
     subprocess.run(command, shell=True)
-def _check_outputs(input_dir: pathlib.Path, dry_run: bool, do_phix_arg: bool, show_fastqc_arg: bool, show_multiqc_arg: bool, threads: int) -> bool:
+def _check_outputs(input_dir: pathlib.Path, dry_run: bool, do_phix_arg: bool, show_fastqc_arg: bool, show_multiqc_arg: bool, threads: int) -> None:
     """
-    Checks the input directory.
-    """
+    Checks the analysis directory for the expected structure and performs analyses as needed.
 
+    Parameters:
+        input_fastq_dir (pathlib.Path): the root run directory for the MiSeq run.
+        dry_run (bool): flag to produce outputs or just test.
+        do_phix_arg (bool): flag to perform PhiX analysis--considering defaulting to True here as our protocols develop.
+        show_fastq_arg (bool): show the fastqc analysis progress if True, else keep this hidden.
+        show_multiqc_arg (bool): show the fastqc analysis progress if True, else keep this hidden.
+        threads (int): number of threads to run for fastqc.
+
+    Returns:
+        (None)
+
+    TODO: consider putting PhiX analysis separate from this loop.
+    """
     # Check directory structure
     logging.info(f'Checking directory structure ...')
     if not input_dir.joinpath('analysis/fastqc').exists():
@@ -263,13 +346,27 @@ def _check_outputs(input_dir: pathlib.Path, dry_run: bool, do_phix_arg: bool, sh
                 input_dir.joinpath('analysis/phiX').mkdir(exist_ok=True)
                 MiSeq_output_dir = _find_miseq_output(input_dir, dry_run)
                 fastq_dir = _find_fastq_files(MiSeq_output_dir, dry_run)
-                _analyze_phix(fastq_dir, input_dir.joinpath('analysis/phix'), show_fastqc_arg, threads)
+                _analyze_phix(
+                    input_fastq_dir=fastq_dir,
+                    destination_dir=input_dir.joinpath('analysis/phix'),
+                    show_fastqc_arg=show_fastqc_arg,
+                    show_multiqc_arg=show_multiqc_arg,
+                    threads=threads)
             logging.info(f"Performed phiX analysis!")
         else: logging.warning(f"phiX analysis already exists!")
     else: logging.info(f"phiX analysis not specified .")
     return None
-def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry_run: bool) -> bool:
+def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry_run: bool) -> None:
     """
+    Copy the files directly from the Z-drive to the local archival directory.
+
+    Parameters:
+        input_fastq_dir (pathlib.Path): the root run directory for the MiSeq run.
+        destination_dir (pathlib.Path): the destination dir for archival.
+        dry_run (bool): flag to produce outputs or just test.
+
+    Returns:
+        (None)
     """
     logging.info(f"Checking destination {destination_dir} for {input_dir.name} ...")
     if not destination_dir.joinpath(input_dir.name).exists():
@@ -280,6 +377,13 @@ def _perform_archive(input_dir: pathlib.Path, destination_dir: pathlib.Path, dry
     return None
 def _check_dependencies(software_list: list) -> None:
     """
+    Check whether dependencies are installed before running analysis (saves some headache) and raise a RuntimeError if there's something wrong.
+
+    Parameters:
+        software_list (list): list of software to check for.
+
+    Returns:
+        (None)
     """
     for tool in software_list:
             try:
@@ -289,15 +393,14 @@ def _check_dependencies(software_list: list) -> None:
     return None
 # --------------------------------------------------
 def main() -> None:
-    """
-    """
+    """ Do the thing. """
     args = get_args()
     _check_dependencies(['fastqc', 'multiqc', 'samtools', 'bowtie2'])
 
     runtime = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
     logging.basicConfig(
         encoding='utf-8',
-        level=logging.INFO,
+        level=logging.DEBUG if args.verbose_arg else logging.INFO,
         handlers=[
             logging.FileHandler(pathlib.Path('/mnt/data/archive/archive_logs').joinpath(f'{runtime}_{args.z_drive_ngs_dir.stem}.log')),
             logging.StreamHandler()],
