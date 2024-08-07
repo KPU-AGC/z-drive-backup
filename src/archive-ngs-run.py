@@ -4,8 +4,8 @@ __description__ =\
 Purpose: To streamline the process of archiving NGS runs from the Z-drive.
 """
 __author__ = "Erick Samera, Kevin Saulog"
-__version__ = "1.0.0"
-__comments__ = "added dependencies check (duh), also fixed md5 behaviour"
+__version__ = "1.1.0"
+__comments__ = "fixed PhiX behaviour; added versioning"
 # --------------------------------------------------
 from argparse import (
     Namespace,
@@ -250,7 +250,7 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
 
     dest_file: pathlib.Path = destination_dir.joinpath('aln.sam')
 
-    command = f'bowtie2 -x /home/agc/Documents/ref/genomes/phiX/phix174 -1 {undetermined_read_1} -2 {undetermined_read_2} -S {dest_file}'
+    command = f'bwa mem /home/agc/Documents/ref/genomes/phiX/phix174.fasta {undetermined_read_1} {undetermined_read_2} > {dest_file}'
     try: subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         logging.critical(f"Alignment failed.\n{exc.returncode}\n{exc.output}")
@@ -262,7 +262,7 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
         return ValueError
 
     # separate forward and reverse files
-    command = f'samtools fastq -1 {destination_dir.joinpath("PhiX.R1.fastq.gz")} -2 {destination_dir.joinpath("PhiX.R2.fastq.gz")} {" ".join([str(file) for file in samfile])}'
+    command = f'samtools view -h -F 4 {" ".join([str(file) for file in samfile])} | samtools fastq -1 {destination_dir.joinpath("PhiX.R1.fastq.gz")} -2 {destination_dir.joinpath("PhiX.R2.fastq.gz")}'
     try: subprocess.run(command, shell=True, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as exc:
         logging.critical(f"Separation of reads failed.\n{exc.returncode}\n{exc.output}")
@@ -290,7 +290,7 @@ def _analyze_phix(input_fastq_dir: pathlib.Path, destination_dir: pathlib.Path, 
     except subprocess.CalledProcessError as exc:
         logging.critical(f"MultiQC failed.\n{exc.returncode}\n{exc.output}")
         return SyntaxError
-    
+
     source_html_path = destination_dir.joinpath('phiX_multiqc.html')
     dest_html_path = destination_dir.parent.parent.joinpath(f'{run_name}.phiX.html')
     command = f'cp {source_html_path} {dest_html_path}'
@@ -391,11 +391,51 @@ def _check_dependencies(software_list: list) -> None:
             except (subprocess.CalledProcessError, FileNotFoundError):
                 raise RuntimeError(f"{tool} is not installed. Are you in the fastqc environment?")
     return None
+def _print_versions(software_list: list) -> None:
+    """
+    Naively print installed versions of the tool.
+
+    Parameters:
+        software_list (list): list of software to check for.
+
+    Returns:
+        (None)
+    """
+
+    def _get_bwa_v() -> str:
+        command = 'bwa 2>&1 | grep Version'
+        result = subprocess.run(command, shell=True, capture_output=True)
+        return result.stdout.decode().split(' ')[1].strip()
+
+    def _get_fastqc_v() -> str:
+        command = 'fastqc --version'
+        result = subprocess.run(command, shell=True, capture_output=True)
+        return result.stdout.decode().split(' ')[-1].strip()[1:]
+
+    def _get_multiqc_v() -> str:
+        command = 'multiqc --version'
+        result = subprocess.run(command, shell=True, capture_output=True)
+        return result.stdout.decode().split(' ')[-1].strip()
+    
+    def _get_samtools_v() -> str:
+        command = 'samtools --version'
+        result = subprocess.run(command, shell=True, capture_output=True)
+        return result.stdout.decode().splitlines()[0].split(' ')[-1].strip()
+    
+    for software, version in zip(
+        ['fastQC', 'multiQC', 'bwa', 'samtools'],
+        [_get_fastqc_v(), _get_multiqc_v(), _get_bwa_v(), _get_samtools_v()]):
+        logging.info(f"VERSION: {software}={version}")
+    
+    logging.info(f"VERSION: ngs-backup.py={__version__}")
+
+    return None
 # --------------------------------------------------
 def main() -> None:
     """ Do the thing. """
     args = get_args()
-    _check_dependencies(['fastqc', 'multiqc', 'samtools', 'bowtie2'])
+    software_list = ['fastqc', 'multiqc', 'samtools', 'bwa']
+    _check_dependencies(software_list=software_list)
 
     runtime = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
     logging.basicConfig(
@@ -407,6 +447,7 @@ def main() -> None:
         datefmt='%Y-%m-%d %H:%M:%S',
         format='%(asctime)s %(levelname)s : %(message)s')
 
+    _print_versions(software_list=software_list)
     logging.info(f"Found NGS run directory: '{args.z_drive_ngs_dir}' .")
     _check_outputs(args.z_drive_ngs_dir, args.dry_run_arg, args.do_phix_arg, args.show_fastqc_arg, args.show_multiqc_arg, args.threads)
     # consider adding phiX analysis here as a separate "module" ? -Erick
