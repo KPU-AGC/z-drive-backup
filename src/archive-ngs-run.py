@@ -4,7 +4,7 @@ __description__ =\
 Purpose: To streamline the process of archiving NGS runs from the Z-drive.
 """
 __author__ = "Erick Samera, Kevin Saulog"
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __comments__ = "fixed PhiX behaviour; added versioning"
 # --------------------------------------------------
 from argparse import (
@@ -201,8 +201,11 @@ def _check_md5(z_drive_dir: pathlib.Path, local_archive_dir: pathlib.Path) -> bo
     z_drive_dir = _find_miseq_output(z_drive_dir)
     local_archive_dir = _find_miseq_output(local_archive_dir)
 
-    _generate_md5(z_drive_dir)
-    _generate_md5(local_archive_dir)
+    if not z_drive_dir.parent.joinpath('checksum.md5').exists(): _generate_md5(z_drive_dir)
+    else: logging.debug(f'md5 hash of {z_drive_dir} already exists ?')
+
+    if not local_archive_dir.parent.joinpath('checksum.md5').exists(): _generate_md5(local_archive_dir)
+    else: logging.debug(f'md5 hash of {local_archive_dir} already exists ?')
 
     logging.info(f'Comparing md5 hashes of {z_drive_dir} and {local_archive_dir} ...')
     with open(z_drive_dir.parent.joinpath('checksum.md5')) as z_drive_checksum_file: z_drive_checksum =  z_drive_checksum_file.read()
@@ -386,12 +389,13 @@ def _check_dependencies(software_list: list) -> None:
         (None)
     """
     for tool in software_list:
-            try:
-                subprocess.run([tool, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-            except (subprocess.CalledProcessError, FileNotFoundError):
-                raise RuntimeError(f"{tool} is not installed. Are you in the fastqc environment?")
+        try:
+            # Try to find the executable in the system PATH
+            subprocess.run(['which', tool], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            raise RuntimeError(f"{tool} is not installed. Are you in the correct environment?")
     return None
-def _print_versions(software_list: list) -> None:
+def _print_versions(args: Namespace) -> None:
     """
     Naively print installed versions of the tool.
 
@@ -427,7 +431,14 @@ def _print_versions(software_list: list) -> None:
         [_get_fastqc_v(), _get_multiqc_v(), _get_bwa_v(), _get_samtools_v()]):
         logging.info(f"VERSION: {software}={version}")
     
-    logging.info(f"VERSION: ngs-backup.py={__version__}")
+    logging.info(f"VERSION: ngs-backup.py={__version__}\n")
+
+    args_dict = vars(args)
+    for key, value in args_dict.items():
+        if value is not None:
+            logging.info(f"ARGS: {key}={value}")
+
+    logging.info(f"Hopefully this works!\n")
 
     return None
 # --------------------------------------------------
@@ -447,7 +458,7 @@ def main() -> None:
         datefmt='%Y-%m-%d %H:%M:%S',
         format='%(asctime)s %(levelname)s : %(message)s')
 
-    _print_versions(software_list=software_list)
+    _print_versions(args=args)
     logging.info(f"Found NGS run directory: '{args.z_drive_ngs_dir}' .")
     _check_outputs(args.z_drive_ngs_dir, args.dry_run_arg, args.do_phix_arg, args.show_fastqc_arg, args.show_multiqc_arg, args.threads)
     # consider adding phiX analysis here as a separate "module" ? -Erick
